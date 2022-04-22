@@ -49,6 +49,16 @@ app.get("/tweets", (req, res) => {
   res.send(lastTenTweets);
 });
 
+app.get("/tweets/:username", (req, res) => {
+  const { username } = req.params;
+
+  const filteredTweets = tweets.filter((tweet) =>
+    tweet.username === username ? true : false
+  );
+
+  res.send(filteredTweets);
+});
+
 app.post("/tweets", jsonParser, (req, res) => {
   const { tweet } = req.body;
   const username = req.headers.user;
