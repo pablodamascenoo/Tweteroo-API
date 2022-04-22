@@ -37,8 +37,8 @@ app.get("/tweets", (req, res) => {
       if (sliceEnd > 0) {
         sliceStart = 0;
       } else {
-        sliceEnd = tweets.length - 10 * (page - 2);
-        sliceStart = sliceEnd - 10;
+        sliceEnd = 0;
+        sliceStart = 0;
       }
     }
   }
