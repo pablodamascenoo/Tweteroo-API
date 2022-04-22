@@ -18,9 +18,12 @@ app.listen(5000, () => {
 app.post("/sign-up", jsonParser, (req, res) => {
   const { username, avatar } = req.body;
 
-  users.push({ username, avatar });
-  console.log(users);
-  res.send("OK");
+  if (username !== "" && avatar !== "") {
+    users.push({ username, avatar });
+    res.status(201).send("OK");
+  } else {
+    res.status(400).send("Todos os campos são obrigatórios!");
+  }
 });
 
 app.get("/tweets", (req, res) => {
