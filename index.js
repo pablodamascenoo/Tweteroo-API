@@ -27,10 +27,24 @@ app.post("/sign-up", jsonParser, (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
+  const { page } = req.query;
+
+  let sliceEnd = tweets.length - 10 * (page - 1);
+  let sliceStart = sliceEnd - 10;
+
+  if (tweets.length >= 10) {
+    if (sliceEnd < 10) {
+      if (sliceEnd > 0) {
+        sliceStart = 0;
+      } else {
+        sliceEnd = tweets.length - 10 * (page - 2);
+        sliceStart = sliceEnd - 10;
+      }
+    }
+  }
+
   let lastTenTweets =
-    tweets.length >= 10
-      ? tweets.slice(tweets.length - 10, tweets.length)
-      : tweets;
+    tweets.length >= 10 ? tweets.slice(sliceStart, sliceEnd) : tweets;
 
   res.send(lastTenTweets);
 });
