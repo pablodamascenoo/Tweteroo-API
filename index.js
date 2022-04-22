@@ -27,11 +27,22 @@ app.post("/sign-up", jsonParser, (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-  res.send(tweets);
+  let lastTenTweets =
+    tweets.length >= 10
+      ? tweets.slice(tweets.length - 10, tweets.length)
+      : tweets;
+
+  res.send(lastTenTweets);
 });
 
 app.post("/tweets", jsonParser, (req, res) => {
-  const { username, tweet } = req.body;
+  const { tweet } = req.body;
+  const username = req.headers.user;
+
+  if (username === "" || tweet === "") {
+    res.status(400).send("Todos os campos são obrigatórios!");
+    return;
+  }
 
   let findUser = users.find((user) =>
     user.username === username ? true : false
@@ -43,5 +54,5 @@ app.post("/tweets", jsonParser, (req, res) => {
     avatar: findUser.avatar,
   });
 
-  res.send(tweets);
+  res.status(201).send(tweets);
 });
