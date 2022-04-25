@@ -1,21 +1,19 @@
 import express from "express";
 import cors from "cors";
 import chalk from "chalk";
-import bodyParser from "body-parser";
 
 let users = [];
 let tweets = [];
 
 const app = express();
 app.use(cors());
-
-let jsonParser = bodyParser.json();
+app.use(express.json());
 
 app.listen(5000, () => {
   console.log(chalk.bold.cyan("\nRunning server...\n"));
 });
 
-app.post("/sign-up", jsonParser, (req, res) => {
+app.post("/sign-up", (req, res) => {
   const { username, avatar } = req.body;
 
   if (username !== "" && avatar !== "") {
@@ -29,13 +27,13 @@ app.post("/sign-up", jsonParser, (req, res) => {
 app.get("/tweets", (req, res) => {
   const { page } = req.query;
 
-  let sliceEnd = tweets.length - 10 * (page - 1);
-  let sliceStart = sliceEnd - 10;
+  let sliceStart = 10 * (page - 1);
+  let sliceEnd = sliceStart + 10;
 
   if (tweets.length >= 10) {
-    if (sliceEnd < 10) {
-      if (sliceEnd > 0) {
-        sliceStart = 0;
+    if (sliceEnd > tweets.length) {
+      if (sliceStart < tweets.length) {
+        sliceEnd = tweets.length;
       } else {
         sliceEnd = 0;
         sliceStart = 0;
@@ -59,7 +57,7 @@ app.get("/tweets/:username", (req, res) => {
   res.send(filteredTweets);
 });
 
-app.post("/tweets", jsonParser, (req, res) => {
+app.post("/tweets", (req, res) => {
   const { tweet } = req.body;
   const username = req.headers.user;
 
@@ -72,7 +70,7 @@ app.post("/tweets", jsonParser, (req, res) => {
     user.username === username ? true : false
   );
 
-  tweets.push({
+  tweets.unshift({
     username,
     tweet,
     avatar: findUser.avatar,
